@@ -55,7 +55,9 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const accounts = mysqlTable(
   "account",
   {
-    userId: varchar("userId", { length: 255 }).notNull(),
+    userId: varchar("userId", { length: 255 })
+      .notNull(),
+    // .references(() => users.id, { onDelete: "cascade" }),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
