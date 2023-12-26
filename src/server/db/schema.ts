@@ -1,8 +1,10 @@
 import { relations, sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   index,
   int,
+  mysqlEnum,
   mysqlTableCreator,
   primaryKey,
   text,
@@ -19,22 +21,84 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const mysqlTable = mysqlTableCreator((name) => `location_explorer_${name}`);
 
-export const posts = mysqlTable(
-  "post",
+export const difficultyEnum = mysqlEnum("difficulty", ["easy", "medium", "hard"]);
+// export const seasonsEnum = mysqlEnum("seasons", ["spring", "summer", "fall", "winter"]);
+
+export const locations = mysqlTable(
+  "location",
   {
     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-    name: varchar("name", { length: 256 }),
+    name: varchar("name", { length: 255 }),
+    lat: int("lat"),
+    lng: int("lng"),
+    description: text("description"),
+    rating: int("rating"),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt").onUpdateNow(),
+
+    // recommendations
+    public_transport_accessibility: int("public_transport_accessibility"),
+    parking_accessibility: int("parking_accessibility"),
+    cost: int("cost"),
+    difficulty: difficultyEnum,
+    recommended_in_the_summer: boolean("recommended_in_the_summer"),
+    recommended_in_the_winter: boolean("recommended_in_the_winter"),
+    recommended_in_the_spring: boolean("recommended_in_the_spring"),
+    recommended_in_the_fall: boolean("recommended_in_the_fall"),
+
   },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
+  (location) => ({
+    createdByIdIdx: index("createdById_idx").on(location.createdById),
+    nameIndex: index("name_idx").on(location.name),
   })
 );
+
+export const comments = mysqlTable(
+  "comment",
+  {
+    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+    name: varchar("name", { length: 255 }),
+    description: text("description"),
+    rating: int("rating"),
+    createdById: varchar("createdById", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+
+  },
+  (comment) => ({
+    createdByIdIdx: index("createdById_idx").on(comment.createdById),
+    nameIndex: index("name_idx").on(comment.name),
+  })
+);
+export const location_images = mysqlTable(
+  "location_image",
+  {
+    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+    description: text("description"),
+    rating: int("rating"),
+    sourceURL: varchar("sourceURL", { length: 255 }),
+    createdById: varchar("createdById", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+
+  },
+  (location_image) => ({
+    createdByIdIdx: index("createdById_idx").on(location_image.createdById),
+  })
+);
+
+export const Relations = relations(location_images, ({ many }) => ({
+  locations: many(locations),
+  // comments: many(comments),
+}));
+
 
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
@@ -47,9 +111,43 @@ export const users = mysqlTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
+export const tags = mysqlTable("tag", {
+  name: varchar("name", { length: 255 }).notNull().primaryKey(),
+  createdById: varchar("createdById", { length: 255 }).notNull(),
+});
+
+export const tags_locations_map = mysqlTable("tags_locations_map", {
+  tagName: varchar("tagId", { length: 255 }).notNull(),
+  locationId: varchar("locationId", { length: 255 }).notNull(),
+});
+
+export const tagRelations = relations(tags, ({ one, many }) => ({
+  tags_locations_map: many(tags_locations_map),
+  createdBy: one(users, { fields: [tags.createdById], references: [users.id] }),
+}));
+
+export const tags_locations_mapRelations = relations(tags_locations_map, ({ one }) => ({
+  tag: one(tags, { fields: [tags_locations_map.tagName], references: [tags.name] }),
+  location: one(locations, { fields: [tags_locations_map.locationId], references: [locations.id] }),
+}));
+
+export const locationsRelations = relations(locations, ({ many, one }) => ({
+  images: many(location_images),
+  comments: many(comments),
+  tags: many(tags_locations_map),
+  createdBy: one(users, { fields: [locations.createdById], references: [users.id] }),
+}));
+
+export const commentsRelations = relations(comments, ({ many, one }) => ({
+  comments: many(comments),
+  createdBy: one(users, { fields: [comments.createdById], references: [users.id] }),
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  locations: many(locations),
+  comments: many(comments),
 }));
 
 export const accounts = mysqlTable(
@@ -57,7 +155,6 @@ export const accounts = mysqlTable(
   {
     userId: varchar("userId", { length: 255 })
       .notNull(),
-    // .references(() => users.id, { onDelete: "cascade" }),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
