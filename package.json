@@ -15,12 +15,13 @@
     "@auth/drizzle-adapter": "^0.3.6",
     "@planetscale/database": "^1.11.0",
     "@t3-oss/env-nextjs": "^0.7.1",
-    "@tanstack/react-query": "^4.36.1",
+    "@tanstack/react-query": "^5.15.0",
     "@trpc/client": "^10.43.6",
     "@trpc/next": "^10.43.6",
     "@trpc/react-query": "^10.43.6",
     "@trpc/server": "^10.43.6",
-    "drizzle-orm": "^0.28.5",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.29.2",
     "next": "^14.0.3",
     "next-auth": "^4.24.5",
     "react": "18.2.0",
@@ -41,7 +42,7 @@
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "^0.20.7",
     "eslint": "^8.54.0",
-    "mysql2": "^3.6.1",
+    "mysql2": "^3.6.5",
     "postcss": "^8.4.31",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
@@ -50,6 +51,5 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.25.0"
-  },
-  "packageManager": "npm@10.2.3"
+  }
 }

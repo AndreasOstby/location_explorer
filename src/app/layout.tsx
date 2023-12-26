@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata = {
   title: "Locations",
-  description: "Find your next location",
+  description: "Locate your next story",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

@@ -146,6 +146,10 @@ export const tags = mysqlTable("tag", {
 export const tags_locations_map = mysqlTable("tags_locations_map", {
   tagName: varchar("tagName", { length: 255 }).notNull(),
   locationId: varchar("locationId", { length: 255 }).notNull(),
+}, (tag) => {
+  return {
+    pk: primaryKey({ columns: [tag.tagName, tag.locationId] }),
+  }
 });
 
 export const tagRelations = relations(tags, ({ one, many }) => ({
