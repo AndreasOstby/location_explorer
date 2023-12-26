@@ -22,7 +22,6 @@ import { type AdapterAccount } from "next-auth/adapters";
 export const mysqlTable = mysqlTableCreator((name) => `location_explorer_${name}`);
 
 export const difficultyEnum = mysqlEnum("difficulty", ["easy", "medium", "hard"]);
-// export const seasonsEnum = mysqlEnum("seasons", ["spring", "summer", "fall", "winter"]);
 
 export const locations = mysqlTable(
   "location",
@@ -75,6 +74,7 @@ export const comments = mysqlTable(
     nameIndex: index("name_idx").on(comment.name),
   })
 );
+
 export const location_images = mysqlTable(
   "location_image",
   {
@@ -82,6 +82,8 @@ export const location_images = mysqlTable(
     description: text("description"),
     rating: int("rating"),
     sourceURL: varchar("sourceURL", { length: 255 }),
+
+    locationId: bigint("id", { mode: "number" }),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -94,10 +96,25 @@ export const location_images = mysqlTable(
   })
 );
 
-export const Relations = relations(location_images, ({ many }) => ({
-  locations: many(locations),
-  // comments: many(comments),
-}));
+export const reviews = mysqlTable(
+  "review",
+  {
+    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+    text: text("text"),
+    rating: int("rating"), // 1-5
+    
+    locationId: bigint("id", { mode: "number" }),
+    createdById: varchar("createdById", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+
+  },
+  (review) => ({
+    createdByIdIdx: index("createdById_idx").on(review.createdById),
+  })
+);
 
 
 export const users = mysqlTable("user", {
@@ -111,13 +128,23 @@ export const users = mysqlTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
+export const location_imagesRelations = relations(location_images, ({ one, many }) => ({
+  locations: one(locations, { fields: [location_images.locationId], references: [locations.id] }),
+  reviews: many(reviews),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  locations: one(locations, { fields: [reviews.locationId], references: [locations.id] }),
+  user: one(users, { fields: [reviews.createdById], references: [users.id] }),
+}));
+
 export const tags = mysqlTable("tag", {
   name: varchar("name", { length: 255 }).notNull().primaryKey(),
   createdById: varchar("createdById", { length: 255 }).notNull(),
 });
 
 export const tags_locations_map = mysqlTable("tags_locations_map", {
-  tagName: varchar("tagId", { length: 255 }).notNull(),
+  tagName: varchar("tagName", { length: 255 }).notNull(),
   locationId: varchar("locationId", { length: 255 }).notNull(),
 });
 
@@ -148,6 +175,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   locations: many(locations),
   comments: many(comments),
+  reviews: many(reviews),
+  location_images: many(location_images),
 }));
 
 export const accounts = mysqlTable(
