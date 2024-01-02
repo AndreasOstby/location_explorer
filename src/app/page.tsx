@@ -4,25 +4,32 @@ import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Tag from "./_components/Tag";
+import { Maps } from "./_components/Maps";
 
 export default async function Home() {
   const hello = await api.post.hello.query({ text: "from tRPC" });
   const session = await getServerAuthSession();
-
+  
   return (
-    <main className=" w-full max-w-[1200px] px-6">
+    <div className="flex justify-center">
+      <main className=" w-full max-w-[1200px] px-6">
       <ImageShowcase />
-      <div className="flex flex-row justify-center pt-6">
-        <div className="flex flex-row w-8/12 items-center justify-between">
+      <div className="flex flex-row justify-between gap-4 pt-6">
+        <div className="flex flex-2 flex-row w-8/12 items-center justify-between">
           <Title />
           <ActionButtons />
 
         </div>
-        <div className="flex flex-row w-full bg-slate-400">
-
+        <div className="card flex flex-1 flex-col items-end bg-slate-400 ">
+          <span className="text-xs">400 meters away</span>
+          <span className="text-lg">Nesodden, Oslo 0168</span>
+          
+          <Maps></Maps>
+          
         </div>
       </div>
     </main>
+    </div>
   );
 }
 
