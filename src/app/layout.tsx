@@ -4,7 +4,7 @@ import { Roboto } from "next/font/google";
 import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import { APIProvider } from "@vis.gl/react-google-maps";
+import { GoogleMapsWrapper } from "./_components/GoogleMapsWrapper";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -27,7 +27,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${roboto.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
-            {children}
+          <GoogleMapsWrapper>
+              {children}
+          </GoogleMapsWrapper>
         </TRPCReactProvider>
       </body>
     </html>

@@ -10,7 +10,7 @@ export default {
       },
       colors: {
         secondaryBlack: "#3F3F46",
-        
+        lightGray: "#B5B5B5",
       },
     },
   },
