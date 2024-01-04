@@ -7,7 +7,7 @@ export default function RecommendationItem({ text, icon }: RecommendationItemPro
   return (
     <div className="flex h-min items-center gap-1 px-2 p-2">
       {icon}
-      <span className="text-xs">{text}</span>
+      <span className="text-sm">{text}</span>
     </div>
   );
 }

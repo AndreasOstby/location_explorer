@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { GoogleMapsWrapper } from "./_components/GoogleMapsWrapper";
+import { Navbar } from "./_components/Navbar";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -28,7 +29,8 @@ export default function RootLayout({
       <body className={`font-sans ${roboto.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <GoogleMapsWrapper>
-              {children}
+            <Navbar />
+            {children}
           </GoogleMapsWrapper>
         </TRPCReactProvider>
       </body>

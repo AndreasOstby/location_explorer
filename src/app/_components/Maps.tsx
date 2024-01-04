@@ -6,11 +6,8 @@ export function Maps({lat, lng}: {lat: number, lng: number}) {
   const position = {lat, lng};
 
   return (
-    // <APIProvider apiKey={process.env.GOOGLE_MAPS_KEY!}>
-      <Map center={position} zoom={15}>
-        <Marker position={position} />
-      </Map>
-    // </APIProvider>
-    // <div>Map</div>
+    <Map center={position} zoom={12} >
+      <Marker position={position} />
+    </Map>
   );
 }

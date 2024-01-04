@@ -64,17 +64,17 @@ export default async function Home({
     <div className="flex justify-center">
       <main className=" w-full max-w-[1200px] px-6">
         <ImageShowcase />
-        <div className="flex flex-row justify-between gap-4 pt-6">
-          <div className="flex flex-2 flex-col w-full mr-20 gap-6 h-full">
+        <div className="flex flex-row justify-between gap-4 pt-6 ">
+          <div className="flex flex-2 flex-col w-full mr-20 gap-6">
             <div className="flex flex-row items-center justify-between">
               <Title text={location.name!} rating={location.rating!.toFixed(1)} />
               <ActionButtons />
 
             </div>
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 h-full">
               <div className="flex flex-col gap-2 w-full">
                 <span className="text-lg font-bold">Recommendations</span>
-                <div className="flex p-4 flex-wrap justify-between h-full">
+                <div className="flex p-4 flex-wrap gap-x-20 h-full">
                   <RecommendationItem text="Public transport accessible" icon={
                     <svg width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="18" cy="7.27612" r="1" stroke="#33363F" stroke-width="2" stroke-linecap="round" />
@@ -105,12 +105,12 @@ export default async function Home({
                   } />
                 </div>
               </div>
-              <Line />
 
             </div>
 
+            <Line />
           </div>
-          <div className="card flex shrink-0 w-4/12 flex-col items-end bg-slate-400 ">
+          <div className="card flex shrink-0 w-4/12 flex-col items-end bg-slate-400 h-[400px]">
             <span className="text-xs">400 meters away</span>
             <span className="text-lg">Nesodden, Oslo 0168</span>
 
