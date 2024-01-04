@@ -3,12 +3,55 @@ import Image from "next/image";
 import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
-import Tag from "./_components/Tag";
-import { Maps } from "./_components/Maps";
+import Tag from "../../_components/Tag";
+import { Maps } from "../../_components/Maps";
+import { db } from "~/server/db";
+import { locations } from "~/server/db/schema";
 
-export default async function Home() {
-  const hello = await api.post.hello.query({ text: "from tRPC" });
-  const session = await getServerAuthSession();
+export default async function Home({
+  params,
+}: {
+  params: { id: number };
+}) {
+  // const hello = await api.post.hello.query({ text: "from tRPC" });
+  
+  // get the location from the database
+  // TODO: account for private locations
+  const location = await db.query.locations.findFirst({ 
+    where: (location, { eq }) => (eq(location.id, Number(params.id))),
+  });
+
+  // await db.insert(locations).values({
+
+  //   name: "Bislett stadion",
+  //   lat: 0.8,
+  //   lng: 0.8,
+  //   description: "Perfect place for running",
+  //   rating: 1,
+  //   createdById: "asd",
+   
+  //   // recommendations
+  //   public_transport_accessibility: 1,
+  //   parking_accessibility: 2,
+  //   cost: 0,
+  //   difficulty: "medium",
+  //   recommended_in_the_summer: true,
+  //   recommended_in_the_winter: false,
+  //   recommended_in_the_spring: true,
+  //   recommended_in_the_fall: true,
+
+  // })
+
+  // const session = await getServerAuthSession();
+
+  if (!location) {
+    return (
+      <div>
+        <span>Location not found: </span>
+        <span>{params.id}</span>
+      </div>
+    );
+  }
   
   return (
     <div className="flex justify-center">
@@ -17,14 +60,14 @@ export default async function Home() {
       <div className="flex flex-row justify-between gap-4 pt-6">
         <div className="flex flex-2 flex-col w-8/12">
           <div className="flex flex-row items-center justify-between">
-            <Title />
+            <Title text={location.name!} />
             <ActionButtons />
 
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-row items-center gap-2">
               <span className="text-lg font-bold">Description</span>
-              <span className="text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vitae nunc sed. </span>
+              <span className="text-sm">{location.description!}</span>
             </div>
             <div className="flex flex-row items-center gap-2">
               <span className="text-lg font-bold">Opening hours</span>
@@ -67,11 +110,11 @@ function ActionButtons() {
   );
 }
 
-function Title() {
+function Title({ text }: { text: string}) {
 
   return (
     <div className="flex gap-6 items-center">
-      <span className="text-4xl font-bold">Spro gruvene</span>
+      <span className="text-4xl font-bold">{text}</span>
       <div className="flex items-baseline gap-1 justify-baseline">
         <span className="text-md">4.2</span>
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
