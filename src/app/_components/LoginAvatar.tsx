@@ -1,20 +1,15 @@
-import Link from "next/link";
-import { getServerAuthSession } from "~/server/auth";
+import { AvatarImage } from "./AvatarImage";
 
-export async function LoginAvatar() {
-  const session = await getServerAuthSession();
+export type Props = {
+  name?: string | null;
+  image?: string | null;
+};
 
+export function LoginAvatar({ name, image }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <p className="text-center text-2xl text-white">
-        {session && <span>Logged in as {session.user?.name}</span>}
-      </p>
-      <Link
-        href={session ? "/api/auth/signout" : "/api/auth/signin"}
-        className=" bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-lightGray h-full rounded-sm"
-      >
-        {session ? "Sign out" : "Sign in"}
-      </Link>
+    <div className="flex h-full items-center justify-center gap-4">
+      <span className=" text-secondaryBlack">{name || "Guest"}</span>
+      <AvatarImage image={image} />
     </div>
   );
 }

@@ -59,19 +59,18 @@ export const comments = mysqlTable(
   "comment",
   {
     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-    name: varchar("name", { length: 255 }),
-    description: text("description"),
-    rating: int("rating"),
+    text: text("text"),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt").onUpdateNow(),
+    locationId: bigint("locationId", { mode: "number" }),
 
   },
   (comment) => ({
     createdByIdIdx: index("createdById_idx").on(comment.createdById),
-    nameIndex: index("name_idx").on(comment.name),
+    locationIdIdx: index("locationId_idx").on(comment.locationId),
   })
 );
 
@@ -83,7 +82,7 @@ export const location_images = mysqlTable(
     rating: int("rating"),
     sourceURL: varchar("sourceURL", { length: 255 }),
 
-    locationId: bigint("id", { mode: "number" }),
+    locationId: bigint("locationId", { mode: "number" }),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -93,6 +92,7 @@ export const location_images = mysqlTable(
   },
   (location_image) => ({
     createdByIdIdx: index("createdById_idx").on(location_image.createdById),
+    locationIdIdx: index("locationId_idx").on(location_image.locationId),
   })
 );
 
@@ -103,7 +103,7 @@ export const reviews = mysqlTable(
     text: text("text"),
     rating: int("rating"), // 1-5
     
-    locationId: bigint("id", { mode: "number" }),
+    locationId: bigint("locationId", { mode: "number" }),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -113,6 +113,7 @@ export const reviews = mysqlTable(
   },
   (review) => ({
     createdByIdIdx: index("createdById_idx").on(review.createdById),
+    locationIdIdx: index("locationId_idx").on(review.locationId),
   })
 );
 
@@ -126,16 +127,17 @@ export const users = mysqlTable("user", {
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
   image: varchar("image", { length: 255 }),
+  isVerified: boolean("isVerified").default(false),
 });
 
 export const location_imagesRelations = relations(location_images, ({ one, many }) => ({
   locations: one(locations, { fields: [location_images.locationId], references: [locations.id] }),
-  reviews: many(reviews),
+  createdBy: one(users, { fields: [location_images.createdById], references: [users.id] }),
 }));
 
 export const reviewsRelations = relations(reviews, ({ one }) => ({
   locations: one(locations, { fields: [reviews.locationId], references: [locations.id] }),
-  user: one(users, { fields: [reviews.createdById], references: [users.id] }),
+  createdBy: one(users, { fields: [reviews.createdById], references: [users.id] }),
 }));
 
 export const tags = mysqlTable("tag", {
@@ -170,7 +172,8 @@ export const locationsRelations = relations(locations, ({ many, one }) => ({
 }));
 
 export const commentsRelations = relations(comments, ({ many, one }) => ({
-  comments: many(comments),
+  // comments: many(comments),
+  location: one(locations, { fields: [comments.locationId], references: [locations.id] }),
   createdBy: one(users, { fields: [comments.createdById], references: [users.id] }),
 }));
 
