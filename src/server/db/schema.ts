@@ -10,6 +10,7 @@ import {
   text,
   timestamp,
   varchar,
+
 } from "drizzle-orm/mysql-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -31,6 +32,7 @@ export const locations = mysqlTable(
     lat: int("lat"),
     lng: int("lng"),
     description: text("description"),
+    coordinates: varchar("coordinates", { length: 255 }),
     rating: int("rating"),
     createdById: varchar("createdById", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")

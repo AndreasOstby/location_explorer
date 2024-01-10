@@ -1,13 +1,13 @@
 import Image from "next/image";
 
+import { Suspense } from "react";
 import { CommentSection } from "~/app/_components/CommentSection";
 import RecommendationItem from "~/app/_components/RecommendationItem";
 import { getServerAuthSession } from "~/server/auth";
 import { db } from "~/server/db";
+import { Line } from "../../_components/Line";
 import { Maps } from "../../_components/Maps";
 import Tag from "../../_components/Tag";
-import { Suspense } from "react";
-import { Line } from "../../_components/Line";
 
 export default async function Home({ params }: { params: { id: string } }) {
   // const hello = await api.post.hello.query({ text: "from tRPC" });
@@ -215,7 +215,11 @@ export default async function Home({ params }: { params: { id: string } }) {
             <span className="text-xs">400 meters away</span>
             <span className="text-lg">Nesodden, Oslo 0168</span>
 
-            <Maps lat={location.lat!} lng={location.lng!}></Maps>
+            <Maps
+              lat={location.lat!}
+              lng={location.lng!}
+              id={"LOCATION_MAP"}
+            ></Maps>
           </div>
         </div>
         <div className="flex flex-row justify-between gap-4 pt-6">

@@ -23,8 +23,6 @@ export const commentRouter = createTRPCRouter({
 
     }),
 
-
-
   getLatest: publicProcedure
   .input(z.object({ location_id: z.number() }))
   .query(({ ctx, input }) => {
